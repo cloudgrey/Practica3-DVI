@@ -42,7 +42,7 @@ var game = function() {
 		//y es posible invocar la versión redefinida con this._super(..).
 		init: function(p) {
 
-			console.log("Se ha creado una instancia de Player");
+			console.log("Estamos creando una instancia de Mario");
 
 	    	// You can call the parent's constructor with this._super(..)
 			/*
@@ -54,14 +54,28 @@ var game = function() {
 				y consulta (sin necesidad de usar getters y setters).
 			*/ 
 			this._super(p, {
-								sprite: "marioR", // Setting a sprite sheet sets sprite width and height 
-								x: 150, // You can also set additional properties that can
-								y: 380 // be overridden on object creation
+								sheet: "marioR", // Setting a sprite sheet sets sprite width and height 
+								x: 20, // You can also set additional properties that can
+								y: 528 // be overridden on object creation
 						   }
 						); //_super
 
 			this.add('2d, platformerControls');
 			// Write event handlers to respond hook into behaviors.
+
+			this.step = function (dt){
+				//console.log(this.p);
+				//this.p["x"] = 20;
+				//this.p["y"] = 20;
+				//this.p["z"] = 20;
+				//console.log(this.p["frame"]);
+
+				if(this.p["y"] > 650){
+					this.p["x"] = 20;
+					this.p["y"] = 528;
+					console.log("Tas caío lol");
+				}
+			}
 
 		}//init 
 
@@ -81,25 +95,55 @@ var game = function() {
 	Q.scene("level1",function(stage) {
 		
 		Q.stageTMX("level.tmx",stage);
-		stage.add("viewport");
-		stage.centerOn(150, 380);
+		/*Q.load("mario_small.png, mario_small.json", function() {
+			Q.compileSheets("mario_small.png", "mario_small.json");
+		});//load*/
+
 
 		// Create the player and add them to the stage
 		var player = stage.insert(new Q.Mario());
+		stage.add("viewport").follow(player);//, { x: true, y: false });
+		stage.viewport.offsetX = -140;
+		stage.viewport.offsetY = 160;
+		//stage.centerOn(150, 380);
+
+
+		// Add in a tile layer, and make it the collision layer
+		/*stage.collisionLayer(new Q.TileLayer({
+                             					dataAsset: 'level.tmx',//'level.json',
+                             					sheet:     'tiles' 
+                             				}));*/
+
+		
+		//stage.follow(player);
 
 	});//scene level1
+
+	/*Q.scene("level1",function(stage) {
+	  Q.stageTMX("level1.tmx",stage);
+	  stage.add("viewport").follow(Q("Player").first());
+	});*/
 
 
 	//-----------------------Carga de recursos e inicio del juego------------------------------------------------
 	
+	/*Q.load("mario_small.png, mario_small.json", function() {
+		Q.compileSheets("mario_small.png", "mario_small.json");
+		//Q.stageScene("level1");
+	});//load*/
 
-	Q.loadTMX("level.tmx");/*, function() {
-   		//Q.stageScene("level1");
+	/*Q.loadTMX("level.tmx", function() {
+		//Q.stageScene("level1");
+		//Q.loadTMX("level.tmx");
+		
+   		Q.stageScene("level1", 2);
 	});*/
 
-	Q.load("mario_small.png, mario_small.json", function() {
-		Q.compileSheets("mario_small.png", "mario_small.json");
-		Q.stageScene("level1");
-	});//load
+	Q.loadTMX("level.tmx, mario_small.png, mario_small.json", function() {
+	  Q.compileSheets("mario_small.png", "mario_small.json");
+	  Q.stageScene("level1");
+	});
+
+	
 
 }//funcion game
