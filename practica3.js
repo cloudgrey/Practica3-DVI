@@ -23,7 +23,11 @@ var game = function() {
 						*/  
 						.setup({width: 320, height: 480})
 						// And turn on default input controls and touch input (for UI) 
-						.controls().touch()
+						.controls().touch();
+
+	/*Q.input.keyboardControls({
+	  RETURN: "intro"
+	});*/
 
 	//-----------------------Se definen las entidades------------------------------------------------
 
@@ -336,7 +340,7 @@ var game = function() {
 		// and restart the game. 
 		button.on("click",function() {
 		  Q.clearStages();
-		  Q.stageScene('level1');
+		  Q.stageScene('startGame');
 		});
 
 		// Expand the container to visibily fit it's contents 
@@ -344,6 +348,38 @@ var game = function() {
 		container.fit(20);
 
 	});//scene endgame
+
+	Q.scene('startGame',function(stage) {
+
+		var container = stage.insert(new Q.UI.Container({
+															x: Q.width/2, 
+															y: Q.height/2, 
+															fill: "rgba(0,0,0,0.5)"
+														}));
+
+		var button = container.insert(new Q.UI.Button({ x: 0, y: 0, h: Q.height, w: Q.width, asset: "mainTitle.png" }));
+		//var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, label: stage.options.label }));
+
+		// When the button is clicked, clear all the stages 
+		// and restart the game. 
+		button.on("click",function() {
+		  //Q.clearStages();
+		  Q.stageScene('level1');
+		});
+
+		//console.log(KEY_NAMES);
+
+		/*if(Q.input['confirm']) {
+			console.log("Holi"); //enter pulsado
+		  // do something
+		}
+		console.log(Q.inputs);*/
+
+		// Expand the container to visibily fit it's contents 
+		// (with a padding of 20 pixels)
+		//container.fit(Q.width);
+
+	});//scene startgame
 
 
 	//-----------------------Carga de recursos e inicio del juego------------------------------------------------
@@ -360,12 +396,13 @@ var game = function() {
    		Q.stageScene("level1", 2);
 	});*/
 
-	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, princess.png", function() {
+	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, princess.png, mainTitle.png", function() {
+	  Q.stageScene("startGame");
 	  Q.compileSheets("mario_small.png", "mario_small.json");
 	  Q.compileSheets("goomba.png", "goomba.json");
 	  Q.compileSheets("bloopa.png", "bloopa.json");
 	  Q.compileSheets("princess.png");
-	  Q.stageScene("level1");
+	  //Q.stageScene("level1");
 	});
 
 	/*Q.loadTMX("level.tmx, goomba.png, goomba.json", function() {
