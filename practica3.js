@@ -12,8 +12,8 @@ var game = function() {
 	   La funcionalidad en Quintus se organiza en módulos que cargamos opcionalmente
 	   al construir la instancia del motor junto al include(...)
 	*/
-	var Q = window.Q = Quintus()
-						.include("Sprites, Scenes, Input, Touch, UI, Anim, TMX, 2D")
+	var Q = window.Q = Quintus({ audioSupported: [  'ogg' , 'mp3'  ] })
+						.include("Sprites, Scenes, Input, Touch, UI, Anim, TMX, 2D, Audio")
 						/*
 							El método Q.setup([id],[options={}]) es el responsable de vincular 
 							la instancia del motor con un elemento de tipo canvas en la página 
@@ -23,7 +23,7 @@ var game = function() {
 						*/  
 						.setup({width: 320, height: 480})
 						// And turn on default input controls and touch input (for UI) 
-						.controls().touch();
+						.controls().touch().enableSound();
 
 	/*Q.input.keyboardControls({
 	  RETURN: "intro"
@@ -142,7 +142,7 @@ var game = function() {
 				//this.p["x"] = 20;
 				//this.p["y"] = 528;
 				console.log("Tas caío lol");
-				Q.stageScene("endGame",1, { label: "You Died" }); 
+				Q.stageScene("endGame",1, { label: "You Died", sound: "music_die.ogg" }); 
 				this.destroy();
 			}
 		}//step
@@ -169,7 +169,7 @@ var game = function() {
 			this.on("bump.left,bump.right",function(collision) {
 
 				if(collision.obj.isA("Mario")) { 
-					Q.stageScene("endGame",1, { label: "You Died" }); 
+					Q.stageScene("endGame",1, { label: "You Died", sound: "music_die.ogg" }); 
 					collision.obj.destroy();
 				} 
 
@@ -218,7 +218,7 @@ var game = function() {
 			this.on("bump.left,bump.right,bump.bottom",function(collision) {
 
 				if(collision.obj.isA("Mario")) { 
-					Q.stageScene("endGame",1, { label: "You Died" }); 
+					Q.stageScene("endGame",1, { label: "You Died", sound: "music_die.ogg" }); 
 					collision.obj.destroy();
 				} 
 
@@ -229,9 +229,12 @@ var game = function() {
 			this.on("bump.top",function(collision) {
 
 				if(collision.obj.isA("Mario")) {
-					this.play("muere");
-				    //Q.stageScene("endGame",1, { label: "You Won!" });
+					//this.play("muere");
+				    //Q.stageScene("endGame",1, { label: "You Won!"});
+				    this.destroy();
+				    collision.obj.p.vy = -300;
 				}
+
 
 			});//on bump top 
 
@@ -278,7 +281,10 @@ var game = function() {
 
 			this.add('2d');
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
-				if(collision.obj.isA("Mario")) Q.stageScene("endGame",1, { label: "You Won!" });
+				if(collision.obj.isA("Mario")) {
+					Q.stageScene("endGame",1, { label: "You Won!", sound: "music_level_complete.ogg" });
+					console.log("entra mas de una vez...que raro");
+				}
 			});//on
 
 		}//init 
@@ -298,6 +304,7 @@ var game = function() {
 	// Create a new scene called level 1 
 	Q.scene("level1",function(stage) {
 		
+		Q.audio.play( "music_main.ogg", { loop: true });
 		Q.stageTMX("level.tmx",stage);
 		/*Q.load("mario_small.png, mario_small.json", function() {
 			Q.compileSheets("mario_small.png", "mario_small.json");
@@ -337,6 +344,9 @@ var game = function() {
 	// create a endGame scene that takes in a `label` option 
 	// to control the displayed message. 
 	Q.scene('endGame',function(stage) {
+
+		Q.audio.stop("music_main.ogg");
+		Q.audio.play(stage.options.sound);
 
 		var container = stage.insert(new Q.UI.Container({
 															x: Q.width/2, 
@@ -421,12 +431,12 @@ var game = function() {
    		Q.stageScene("level1", 2);
 	});*/
 
-	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, princess.png, mainTitle.png", function() {
+	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, princess.png, mainTitle.png, music_main.ogg, music_level_complete.ogg, music_die.ogg, coin.ogg", function() {
 	  
 	  Q.compileSheets("mario_small.png", "mario_small.json");
 	  Q.compileSheets("goomba.png", "goomba.json");
 	  Q.compileSheets("bloopa.png", "bloopa.json");
-	  Q.compileSheets("princess.png");
+	  //Q.compileSheets("princess.png");
 	  //Q.stageScene("level1");
 
 	  Q.animations("cosasmario", {
