@@ -367,6 +367,23 @@ var game = function() {
 		  Q.stageScene('level1');
 		});
 
+		/*Q.input.on("confirm",this,function() {
+		    // Do something
+		    Q.stageScene('level1');
+		});*/
+
+		var pantallaComienzo = true; //es un poco ñapa pero de momento sirve
+		/*
+		si no hago eso del true, en cualquier momento de la partida
+		cuando pulse enter (el confirm) se reinicia,
+		por eso asi controlo que solo haga efecto en la pantalla de inicio
+		*/
+		Q.input.on("confirm",this,function() {
+		    // Do something
+		    if(pantallaComienzo) Q.stageScene('level1');
+		    pantallaComienzo = false;
+		});
+		
 		//console.log(KEY_NAMES);
 
 		/*if(Q.input['confirm']) {
