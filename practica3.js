@@ -29,7 +29,7 @@ var game = function() {
 	  RETURN: "intro"
 	});*/
 
-	var pantallaComienzo = true; //es un poco ñapa pero de momento sirve
+	//var pantallaComienzo = true; //es un poco ñapa pero de momento sirve
 		/*
 		si no hago eso del true, en cualquier momento de la partida
 		cuando pulse enter (el confirm) se reinicia,
@@ -491,7 +491,7 @@ var game = function() {
 
 	Q.scene('startGame',function(stage) {
 
-		pantallaComienzo = true;
+		//pantallaComienzo = true;
 		Q.state.reset({ monedasRecogidas: 0, monedasTotales: 2, lives: 1});
 
 		var container = stage.insert(new Q.UI.Container({
@@ -509,21 +509,24 @@ var game = function() {
 		  //Q.clearStages();
 		  Q.stageScene('level1');
 		  Q.stageScene("hud",1);
-		  pantallaComienzo = false;
+		  //pantallaComienzo = false;
 		});
 
-		/*Q.input.on("confirm",this,function() {
-		    // Do something
-		    Q.stageScene('level1');
-		});*/
 
-		Q.input.on("confirm",this,function() {
+		/*Q.input.on("confirm",this,function() {
 		    // Do something
 		    if(pantallaComienzo) {
 		    	Q.stageScene('level1');
 		    	Q.stageScene("hud",1);
 		    }
 		    pantallaComienzo = false;
+		}); el que funcionaba con la ñapa de primeras*/
+
+		Q.input.on("confirm",stage,function() {
+		    // Do something
+		    //console.log("probandooo");
+		    Q.stageScene('level1');
+		    Q.stageScene("hud",1);
 		});
 		
 		//console.log(KEY_NAMES);
