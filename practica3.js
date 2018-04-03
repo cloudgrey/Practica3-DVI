@@ -115,6 +115,7 @@ var game = function() {
 		step: function(dt) {
 			//console.log(Q.input);
 			//console.log(this.p.direction);
+
 			if(Q.inputs['right']){
 				this.play("run_right");
 			}
@@ -314,20 +315,25 @@ var game = function() {
 			this._super(p, {
 								asset: "princess.png", // Setting a sprite sheet sets sprite width and height 
 								x: 1956, // You can also set additional properties that can
-								y: 46 // be overridden on object creation
+								y: 46, // be overridden on object creation
+								yaColisionada: false
 						   }
 						); //_super
 
 			this.add('2d');
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
 		
-				if(collision.obj.isA("Mario")) {
+				if(collision.obj.isA("Mario") && !this.yaColisionada) {
 					//console.log("hola mario");
 					
 					if(Q.state.get("monedasRecogidas") >= Q.state.get("monedasTotales")){
+						this.yaColisionada = true;
 						Q.stageScene("endGame",2, { label: "You Won!", sound: "music_level_complete.ogg" });
 					}
-					console.log("entra varias veces con la colision... asegurarse de que corte solo con una");
+					else{
+						console.log("Coge todas las monedas primero");
+					}
+					//console.log("entra varias veces con la colision... asegurarse de que corte solo con una");
 					
 				}
 			});//on
@@ -347,23 +353,20 @@ var game = function() {
 								sprite: "coin",
 								x: 100, // You can also set additional properties that can
 								y: 480, // be overridden on object creation
-								gravity: 0
+								gravity: 0,
+								yaColisionada: false
 						   }
 						); //_super
 
 			this.add('2d, animation, tween');
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
-				if(collision.obj.isA("Mario")) {
-					
-					//Q.stageScene("endGame",1, { label: "You Won!", sound: "music_level_complete.ogg" });
-					console.log("has tocado la moneda");
-					//this.animate({ x: 100, y: 430, angle: 360 });
+				if(collision.obj.isA("Mario") && !this.yaColisionada) {
+					this.yaColisionada = true;
+					console.log("Has cogido una moneda");
 					this.animate({y: this.p.y-50, angle: 360 });
 					Q.audio.play("coin.ogg");
-					//console.log(Q.state);
-					//Q.state.monedasRecogidas++;
 					Q.state.inc("monedasRecogidas",1); // add 1 to monedasRecogidas
-					console.log("vigilar para que colisione solo 1 vez con la moneda")
+					//console.log("vigilar para que colisione solo 1 vez con la moneda");
 				}
 			});//on
 
