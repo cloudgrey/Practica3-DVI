@@ -151,6 +151,33 @@ var game = function() {
 
 	});//extend Mario
 
+	Q.component("defaultEnemy", {
+		added: function() {
+	    	// Para inicializar cuando se crea el componente
+			//this.entity.p.algunaPropiedadDelObjetoQueTieneEsteComponente = 30; 
+			
+			//this.entity.on('bump.left,bump.right,bump.bottom', this, 'colisionOtroLado');
+			//this.entity.on('bump.top', this, 'colisionArriba');
+		},
+
+		colisionArriba: function(objetoQueGolpea) {
+			if(objetoQueGolpea.isA("Mario")) {
+				//objetoGolpeado.destroy();
+				this.entity.destroy();
+			    objetoQueGolpea.p.vy = -300;
+			    //Q.stageScene("endGame",1, { label: "You Won!" });
+			}
+		},
+
+		colisionOtroLado: function(objetoQueGolpea) {
+			if(objetoQueGolpea.isA("Mario")) { 
+				Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
+				objetoQueGolpea.destroy();
+			} 
+		}
+
+	});//defaultEnemy
+
 	Q.Sprite.extend("Goomba",{
 
 		init: function(p) {
@@ -166,14 +193,16 @@ var game = function() {
 						   }
 						); //_super
 
-			this.add('2d, aiBounce, animation');
+			this.add('2d, aiBounce, animation, defaultEnemy');
 
+			
 			this.on("bump.left,bump.right",function(collision) {
 
-				if(collision.obj.isA("Mario")) { 
+				/*if(collision.obj.isA("Mario")) { 
 					Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
 					collision.obj.destroy();
-				} 
+				}*/
+				this.defaultEnemy.colisionOtroLado(collision.obj);
 
 			});//on bump left-right-bottom
 
@@ -181,13 +210,17 @@ var game = function() {
 			// and give the user a "hop" 
 			this.on("bump.top",function(collision) {
 
-				if(collision.obj.isA("Mario")) {
+				//console.log(collision.obj);
+				/*if(collision.obj.isA("Mario")) {
 					this.destroy();
 				    collision.obj.p.vy = -300;
 				    //Q.stageScene("endGame",1, { label: "You Won!" });
-				}
+				}*/
+				//console.log(collision.isA("Mario"));
+				this.defaultEnemy.colisionArriba(collision.obj);
 
 			});//on bump top 
+			
 
 			this.step = function (dt){
 				this.play("normal");
@@ -196,6 +229,7 @@ var game = function() {
 		}//init 
 
 	});//extend Goomba
+
 
 	Q.Sprite.extend("Bloopa",{
 
@@ -213,16 +247,17 @@ var game = function() {
 						   }
 						); //_super
 
-			this.add('2d, animation');
+			this.add('2d, animation, defaultEnemy');
 
 			this.on("died",this,"muerto");
 
 			this.on("bump.left,bump.right,bump.bottom",function(collision) {
 
-				if(collision.obj.isA("Mario")) { 
+				/*if(collision.obj.isA("Mario")) { 
 					Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
 					collision.obj.destroy();
-				} 
+				}*/
+				this.defaultEnemy.colisionOtroLado(collision.obj); 
 
 			});//on bump left-right-bottom
 
@@ -230,12 +265,14 @@ var game = function() {
 			// and give the user a "hop" 
 			this.on("bump.top",function(collision) {
 
-				if(collision.obj.isA("Mario")) {
+				/*if(collision.obj.isA("Mario")) {
 					//this.play("muere");
 				    //Q.stageScene("endGame",1, { label: "You Won!"});
 				    this.destroy();
 				    collision.obj.p.vy = -300;
-				}
+				}*/
+
+				this.defaultEnemy.colisionArriba(collision.obj);
 
 
 			});//on bump top 
