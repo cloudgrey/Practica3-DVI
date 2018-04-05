@@ -12,7 +12,9 @@ var game = function() {
 	   La funcionalidad en Quintus se organiza en módulos que cargamos opcionalmente
 	   al construir la instancia del motor junto al include(...)
 	*/
-	var Q = window.Q = Quintus({ audioSupported: ['mp3','ogg'] })
+	//{audioSupported: [ 'wav','mp3','ogg' ]}
+	//{ audioSupported: ['mp3','ogg'] }
+	var Q = window.Q = Quintus({audioSupported: [ 'mp3','ogg','wav' ]})
 						.include("Sprites, Scenes, Input, Touch, UI, Anim, TMX, 2D, Audio")
 						/*
 							El método Q.setup([id],[options={}]) es el responsable de vincular 
@@ -25,17 +27,7 @@ var game = function() {
 						// And turn on default input controls and touch input (for UI) 
 						.controls().touch().enableSound();
 
-	/*Q.input.keyboardControls({
-	  RETURN: "intro"
-	});*/
-
-	//var pantallaComienzo = true; //es un poco ñapa pero de momento sirve
-		/*
-		si no hago eso del true, en cualquier momento de la partida
-		cuando pulse enter (el confirm) se reinicia,
-		por eso asi controlo que solo haga efecto en la pantalla de inicio
-		*/
-
+	var SPRITE_ENEMY = 1
 
 	//-----------------------Se definen las entidades------------------------------------------------
 
@@ -69,7 +61,8 @@ var game = function() {
 								sheet: "cosasmario", // Setting a sprite sheet sets sprite width and height 
 								sprite: "cosasmario",
 								x: 55, // You can also set additional properties that can
-								y: 528 // be overridden on object creation
+								y: 528, // be overridden on object creation
+								collisionMask: SPRITE_ENEMY
 						   }
 						); //_super
 
@@ -164,14 +157,24 @@ var game = function() {
 		colisionArriba: function(objetoQueGolpea) {
 			if(objetoQueGolpea.isA("Mario")) {
 				//objetoGolpeado.destroy();
-				this.entity.destroy();
+				//this.entity.destroy();
+				
+				if(!this.entity.p.killed){
+					this.entity.p.killed = true;
+					this.entity.p.horaInicioMuerte = new Date().getTime() / 1000;
+
+					//this.entity.p.type = Q.SPRITE_NONE;
+    				//this.entity.p.collisionMask = Q.SPRITE_NONE;
+				} 
+				//console.log("AQUI " + this.entity.p.horaInicioMuerte);
+				//this.entity.destroy();
 			    objetoQueGolpea.p.vy = -300;
 			    //Q.stageScene("endGame",1, { label: "You Won!" });
 			}
 		},
 
 		colisionOtroLado: function(objetoQueGolpea) {
-			if(objetoQueGolpea.isA("Mario")) { 
+			if(objetoQueGolpea.isA("Mario") && !this.entity.p.killed) { 
 				Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
 				objetoQueGolpea.destroy();
 			} 
@@ -190,7 +193,11 @@ var game = function() {
 								sprite: "goomba", //agrego sprite por la animacion, sino solo hace falta sheet
 								x: 1478, // You can also set additional properties that can
 								y: 494, // be overridden on object creation
-								vx: 100
+								vx: 100,
+								killed: false,
+								horaInicioMuerte: 0,
+								segundosHastaDesaparecer: 1,
+								type: SPRITE_ENEMY
 						   }
 						); //_super
 
@@ -205,6 +212,7 @@ var game = function() {
 				}*/
 				this.defaultEnemy.colisionOtroLado(collision.obj);
 
+
 			});//on bump left-right-bottom
 
 			// If the enemy gets hit on the top, destroy it 
@@ -218,13 +226,33 @@ var game = function() {
 				    //Q.stageScene("endGame",1, { label: "You Won!" });
 				}*/
 				//console.log(collision.isA("Mario"));
+
 				this.defaultEnemy.colisionArriba(collision.obj);
+				//this.p.killed = true;
 
 			});//on bump top 
 			
 
 			this.step = function (dt){
-				this.play("normal");
+				
+				if(this.p.killed){
+					this.play("muere");
+					
+					var horaActual = new Date().getTime() / 1000;
+					/*var horaDeDesaparecer = (new Date().getTime() / 1000) + th;
+					console.log("inicio muerte = " + this.p.horaInicioMuerte);
+					console.log("hora actual = " + horaActual);
+					console.log(this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer);*/
+					if(horaActual >= this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer){
+						//console.log("entra?");
+						this.destroy();
+					}
+					
+				}
+				else{
+					this.play("normal");
+				}
+
 			}
 
 		}//init 
@@ -242,7 +270,13 @@ var game = function() {
 								sheet: "bloopa", // Setting a sprite sheet sets sprite width and height 
 								sprite: "bloopa",
 								x: 200, // You can also set additional properties that can
-								y: 527 // be overridden on object creation
+								y: 527, // be overridden on object creation
+								killed: false,
+								horaInicioMuerte: 0,
+								segundosHastaDesaparecer: 1,
+								type: SPRITE_ENEMY
+								//type: Q.SPRITE_ENEMY,
+      							//collisionMask: Q.SPRITE_DEFAULT
 								//vy: -60,
 								//gravity: 0
 						   }
@@ -280,7 +314,27 @@ var game = function() {
 
 			this.step = function (dt){
 
-				this.play("normal");
+				if(this.p.killed){
+					this.play("muere");
+					var horaActual = new Date().getTime() / 1000;
+					
+					//this.p.collisionMask = Q.SPRITE_NONE;
+					//this.del('2d');
+					//this.p.z=4;
+
+					//console.log(this.p.z);
+					//this.p.z = 4;
+					//console.log(this.p.z);
+
+					if(horaActual >= this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer){
+						//console.log("entra?");
+						this.destroy();
+					}
+					//return; PREGUNTARLE si este return le mola, lo he visto en un ejemplo y así no comprueba nada mas del step porque no hace falta realmente
+				}
+				else{
+					this.play("normal");
+				}
 
 				if(this.p["y"] < 528-50){//en realidad no hace falta este if, siempre entra en else
 					this.p["gravity"] = 1;
@@ -299,11 +353,11 @@ var game = function() {
 			}
 
 		},//init 
-		muerto: function() {
+		/*muerto: function() {
 			//console.log("hey");
 		    //this.destroy();
 			//collision.obj.p.vy = -300;
-		},
+		},*/
 	});//extend Bloopa
 
 	Q.Sprite.extend("Princess",{
@@ -442,7 +496,7 @@ var game = function() {
 	});//scene level1
 
 	Q.scene("hud", function(stage){
-		//console.log("hellooo");
+		
 		var container = stage.insert(new Q.UI.Container({
 															x: Q.width/2, 
 															y: Q.height/10//, 
@@ -491,7 +545,15 @@ var game = function() {
 
 	Q.scene('startGame',function(stage) {
 
-		//pantallaComienzo = true;
+		/*
+		recomendación del profe: hacer un 
+		stage.on("destroy", function(){
+			
+			y aqui destruir los sprites que queden activos
+			para que no hagan nada ni respondan a las teclas, se limpia así todo lo generado
+		});
+		*/
+
 		Q.state.reset({ monedasRecogidas: 0, monedasTotales: 2, lives: 1});
 
 		var container = stage.insert(new Q.UI.Container({
@@ -509,7 +571,6 @@ var game = function() {
 		  //Q.clearStages();
 		  Q.stageScene('level1');
 		  Q.stageScene("hud",1);
-		  //pantallaComienzo = false;
 		});
 
 
@@ -524,7 +585,6 @@ var game = function() {
 
 		Q.input.on("confirm",stage,function() {
 		    // Do something
-		    //console.log("probandooo");
 		    Q.stageScene('level1');
 		    Q.stageScene("hud",1);
 		});
@@ -578,12 +638,12 @@ var game = function() {
 
 	  Q.animations("bloopa", {
 		  normal: { frames: [0,1], rate: 8/15},
-		  muere: { frames: [2], rate: 1/15, trigger: "died"}
+		  muere: { frames: [2], rate: 8/15}//, trigger: "died"}
 	  });
 
 	  Q.animations("goomba", {
 		  normal: { frames: [0,1], rate: 8/15},
-		  muere: { frames: [2,3], rate: 8/15}
+		  muere: { frames: [2], rate: 8/15}
 	  });
 
 	  Q.animations("coin", {
