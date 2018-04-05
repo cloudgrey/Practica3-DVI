@@ -159,13 +159,17 @@ var game = function() {
 				//objetoGolpeado.destroy();
 				//this.entity.destroy();
 				
+				/*
 				if(!this.entity.p.killed){
 					this.entity.p.killed = true;
 					this.entity.p.horaInicioMuerte = new Date().getTime() / 1000;
+					//this.entity.p.sensor = true;
 
 					//this.entity.p.type = Q.SPRITE_NONE;
     				//this.entity.p.collisionMask = Q.SPRITE_NONE;
 				} 
+				*/
+
 				//console.log("AQUI " + this.entity.p.horaInicioMuerte);
 				//this.entity.destroy();
 			    objetoQueGolpea.p.vy = -300;
@@ -197,7 +201,8 @@ var game = function() {
 								killed: false,
 								horaInicioMuerte: 0,
 								segundosHastaDesaparecer: 1,
-								type: SPRITE_ENEMY
+								sensor: true
+								//type: SPRITE_ENEMY
 						   }
 						); //_super
 
@@ -274,7 +279,8 @@ var game = function() {
 								killed: false,
 								horaInicioMuerte: 0,
 								segundosHastaDesaparecer: 1,
-								type: SPRITE_ENEMY
+								//type: SPRITE_ENEMY
+								sensor: true
 								//type: Q.SPRITE_ENEMY,
       							//collisionMask: Q.SPRITE_DEFAULT
 								//vy: -60,
@@ -408,7 +414,8 @@ var game = function() {
 								x: 100, // You can also set additional properties that can
 								y: 480, // be overridden on object creation
 								gravity: 0,
-								yaColisionada: false
+								yaColisionada: false,
+								sensor: true
 						   }
 						); //_super
 
@@ -417,7 +424,7 @@ var game = function() {
 				if(collision.obj.isA("Mario") && !this.yaColisionada) {
 					this.yaColisionada = true;
 					console.log("Has cogido una moneda");
-					this.animate({y: this.p.y-50, angle: 360 });
+					this.animate({x: this.p.x, y: this.p.y-50});//, angle: 360 });
 					Q.audio.play("coin.ogg");
 					Q.state.inc("monedasRecogidas",1); // add 1 to monedasRecogidas
 					//console.log("vigilar para que colisione solo 1 vez con la moneda");
