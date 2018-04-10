@@ -27,7 +27,7 @@ var game = function() {
 						// And turn on default input controls and touch input (for UI) 
 						.controls().touch().enableSound();
 
-	var SPRITE_ENEMY = 1
+	//var SPRITE_ENEMY = 1
 
 	//-----------------------Se definen las entidades------------------------------------------------
 
@@ -61,8 +61,8 @@ var game = function() {
 								sheet: "cosasmario", // Setting a sprite sheet sets sprite width and height 
 								sprite: "cosasmario",
 								x: 55, // You can also set additional properties that can
-								y: 528, // be overridden on object creation
-								collisionMask: SPRITE_ENEMY
+								y: 528 // be overridden on object creation
+								//collisionMask: SPRITE_ENEMY
 						   }
 						); //_super
 
@@ -108,6 +108,7 @@ var game = function() {
 		step: function(dt) {
 			//console.log(Q.input);
 			//console.log(this.p.direction);
+			//console.log(this.p);
 
 			if(Q.inputs['right']){
 				this.play("run_right");
@@ -159,7 +160,7 @@ var game = function() {
 				//objetoGolpeado.destroy();
 				//this.entity.destroy();
 				
-				/*
+				
 				if(!this.entity.p.killed){
 					this.entity.p.killed = true;
 					this.entity.p.horaInicioMuerte = new Date().getTime() / 1000;
@@ -168,7 +169,7 @@ var game = function() {
 					//this.entity.p.type = Q.SPRITE_NONE;
     				//this.entity.p.collisionMask = Q.SPRITE_NONE;
 				} 
-				*/
+				
 
 				//console.log("AQUI " + this.entity.p.horaInicioMuerte);
 				//this.entity.destroy();
@@ -200,8 +201,8 @@ var game = function() {
 								vx: 100,
 								killed: false,
 								horaInicioMuerte: 0,
-								segundosHastaDesaparecer: 1,
-								sensor: true
+								segundosHastaDesaparecer: 7
+								//sensor: true
 								//type: SPRITE_ENEMY
 						   }
 						); //_super
@@ -278,9 +279,9 @@ var game = function() {
 								y: 527, // be overridden on object creation
 								killed: false,
 								horaInicioMuerte: 0,
-								segundosHastaDesaparecer: 1,
+								segundosHastaDesaparecer: 1
 								//type: SPRITE_ENEMY
-								sensor: true
+								//sensor: true
 								//type: Q.SPRITE_ENEMY,
       							//collisionMask: Q.SPRITE_DEFAULT
 								//vy: -60,
@@ -320,6 +321,7 @@ var game = function() {
 
 			this.step = function (dt){
 
+				//console.log(this.p);
 				if(this.p.killed){
 					this.play("muere");
 					var horaActual = new Date().getTime() / 1000;
@@ -365,6 +367,153 @@ var game = function() {
 			//collision.obj.p.vy = -300;
 		},*/
 	});//extend Bloopa
+
+
+
+
+	Q.Sprite.extend("Koopa",{
+
+		init: function(p) {
+
+			console.log("Estamos creando una instancia de Koopa");
+
+			this._super(p, {
+								sheet: "koopaIzq", // Setting a sprite sheet sets sprite width and height 
+								sprite: "koopa", //agrego sprite por la animacion, sino solo hace falta sheet
+								x: 240, // You can also set additional properties that can
+								y: 480, // be overridden on object creation
+								vx: 100, //que comience moviendose a la derecha
+								killed: false,
+								thrust: false,
+								vecesGolpeado: 0,
+								gravity: 1,
+								scale: 1.3,
+								velocidadEnloquecido: 150,
+								esPeligroso: true
+								//horaInicioMuerte: 0,
+								//segundosHastaDesaparecer: 1,
+								//sensor: true
+								//type: SPRITE_ENEMY
+						   }
+						); //_super
+
+			this.add('2d, aiBounce, animation');//, defaultEnemy');
+
+			
+			this.on("bump.left,bump.right",function(collision) {
+				//console.log("hola1");
+				if(collision.obj.isA("Mario")) { 
+					//if(!this.p.killed || (this.p.killed && this.p.thrust)){
+					if(this.p.esPeligroso){
+						Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
+						collision.obj.destroy();
+					}
+
+					if(this.p.killed && !this.p.thrust){
+						this.p.vecesGolpeado=2;
+						this.p.thrust = true;
+						if(collision.obj.p.direction == "right") this.p.vx = this.p.velocidadEnloquecido; //si mario le empuja desde la izquierda (porque se mueve hacia el yendo a la derecha)
+						else this.p.vx = -this.p.velocidadEnloquecido;
+
+						this.p.horaInicioPeligroso = new Date().getTime();
+
+					}
+					
+				}
+				//this.defaultEnemy.colisionOtroLado(collision.obj);
+
+
+			});//on bump left-right-bottom
+
+			// If the enemy gets hit on the top, destroy it 
+			// and give the user a "hop" 
+			this.on("bump.top",function(collision) {
+				//console.log("hola2");
+				//console.log(collision.obj);
+				if(collision.obj.isA("Mario")) {
+					//this.destroy();
+					//console.log("hola");
+					this.p.vecesGolpeado++;
+					collision.obj.p.vy = -300;
+
+					if(this.p.vecesGolpeado == 1) {
+						this.p.killed = true;
+						this.p.esPeligroso = false;
+						this.p.vx = 0;
+						this.p.scale = 0.9;
+					}
+					else if(this.p.vecesGolpeado == 2) {
+						this.p.thrust = true;
+						this.p.esPeligroso = true;
+						 
+						//saber si mario le salta yendo hacia la derecha o izquierda para saber si darle velocidad positiva o negativa, respectivamente, al caparazon
+						//console.log(collision.obj.p.direction);
+						if(collision.obj.p.direction == "right") this.p.vx = this.p.velocidadEnloquecido; //si mario le salta desde la izquierda (porque se mueve hacia el yendo a la derecha)
+						else this.p.vx = -this.p.velocidadEnloquecido;
+
+						//this.p.vx = 30;
+						//console.log(this.p);
+					}
+					else if(this.p.vecesGolpeado > 2) {
+						this.p.vecesGolpeado = 1;
+						this.p.thrust = false;
+						this.p.esPeligroso = false;
+						this.p.vx = 0;
+					}
+				    
+				    //Q.stageScene("endGame",1, { label: "You Won!" });
+				}
+				//console.log(collision.isA("Mario"));
+
+				//this.defaultEnemy.colisionArriba(collision.obj);
+				//this.p.killed = true;
+
+			});//on bump top 
+			
+
+			this.step = function (dt){
+				
+				//console.log(this.p.direction);
+				if(this.p.killed){
+					if(!this.p.thrust){
+						if(this.p.vx > 0) this.play("shellIzq");
+						else this.play("shellDer");
+						
+
+					}
+					else {
+						this.play("enloquecido"); 
+
+						if(!this.p.esPeligroso){
+							var horaActual = new Date().getTime();
+							if(this.p.horaInicioPeligroso + 1000 <= horaActual) {
+								this.p.esPeligroso = true;
+								
+							}
+						}
+					}
+					
+					//console.log(this.p.esPeligroso);
+					
+				}
+				else{
+					if(this.p.vx > 0) this.play("normalDer");
+					else this.play("normalIzq");
+				}
+
+				/*if(this.p.flip === true){
+					console.log("hola");
+					this.play("normalIzq");
+				}*/
+
+			}
+
+		}//init 
+
+	});//extend Koopa
+
+
+
 
 	Q.Sprite.extend("Princess",{
 
@@ -495,6 +644,11 @@ var game = function() {
 		var princess = stage.insert(new Q.Princess());
 		var moneda = stage.insert(new Q.Coin());
 		var moneda2 = stage.insert(new Q.Coin({x: 300, y:480}));
+		var koopa = stage.insert(new Q.Koopa());
+
+		/*stage.add("viewport").follow(koopa);//, { x: true, y: false });
+		stage.viewport.offsetX = -110;
+		stage.viewport.offsetY = 160;*/
 		
 		// Expand the container to visibily fit it's contents 
 		// (with a padding of 20 pixels)
@@ -625,13 +779,15 @@ var game = function() {
    		Q.stageScene("level1", 2);
 	});*/
 
-	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, princess.png, mainTitle.png, music_main.ogg, music_level_complete.ogg, music_die.ogg, coin.ogg, coin.png, coin.json, jump.mp3, unlocked.mp3", function() {
+	Q.loadTMX("level.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, koopa.png, koopa.json, princess.png, mainTitle.png, music_main.ogg, music_level_complete.ogg, music_die.ogg, coin.ogg, coin.png, coin.json, jump.mp3, unlocked.mp3", function() {
 	  
 	  Q.compileSheets("mario_small.png", "mario_small.json");
 	  Q.compileSheets("goomba.png", "goomba.json");
 	  Q.compileSheets("bloopa.png", "bloopa.json");
 	  //Q.compileSheets("princess.png");
 	  Q.compileSheets("coin.png", "coin.json");
+	  Q.compileSheets("koopa.png", "koopa.json");
+	  Q.compileSheets("koopashell.png", "koopashell.json");
 	  //Q.stageScene("level1");
 
 	  Q.animations("cosasmario", {
@@ -651,6 +807,14 @@ var game = function() {
 	  Q.animations("goomba", {
 		  normal: { frames: [0,1], rate: 8/15},
 		  muere: { frames: [2], rate: 8/15}
+	  });
+
+	  Q.animations("koopa", {
+		  normalIzq: { frames: [3,2,1,0], rate: 3/15},
+		  normalDer: { frames: [7,6,5,4], rate: 3/15},
+		  shellIzq: { frames: [8], rate: 8/15},
+		  shellDer: { frames: [9], rate: 8/15},
+		  enloquecido: { frames: [8, 9], rate: 3/15}
 	  });
 
 	  Q.animations("coin", {
