@@ -380,6 +380,11 @@ var game = function() {
 						this.p.esPeligroso = false;
 						this.p.vx = 0;
 						this.p.scale = 0.9;
+						var puntos = PUNTUACION_KOOPA + ".gif";
+				    var xAntigua = this.p.x;
+				    var yAntigua = this.p.y;
+				    var punto = this.stage.insert(new Q.Puntos({asset: puntos, x: xAntigua, y: yAntigua - 34 }));
+						Q.state.inc("puntuacion",PUNTUACION_KOOPA);
 					}
 					else if(this.p.vecesGolpeado == 2) {
 						this.p.thrust = true;
@@ -399,11 +404,7 @@ var game = function() {
 						this.p.esPeligroso = false;
 						this.p.vx = 0;
 					}
-				  var puntos = PUNTUACION_KOOPA + ".gif";
-			    var xAntigua = this.p.x;
-			    var yAntigua = this.p.y;
-			    var punto = this.stage.insert(new Q.Puntos({asset: puntos, x: xAntigua, y: yAntigua - 34 }));
-					Q.state.inc("puntuacion",PUNTUACION_KOOPA);
+				  
 				    //Q.stageScene("endGame",1, { label: "You Won!" });
 				}
 				//console.log(collision.isA("Mario"));
