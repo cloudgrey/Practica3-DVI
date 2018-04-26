@@ -61,7 +61,7 @@ var game = function() {
 			*/
 			this.on("bump.bottom",function(collision) {
 
-				if(collision.obj.isA("TileLayer")) { 
+				if(collision.obj.isA("TileLayer") || collision.obj.isA("LifeBlock")|| collision.obj.isA("BigBlock")|| collision.obj.isA("CoinBlock")) { 
 					this.p.puedeSaltar = true;
 				}
 
@@ -304,7 +304,6 @@ var game = function() {
 				var horaActual = new Date().getTime() / 1000;
 
 				if(horaActual >= this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer){
-					//console.log("entra?");
 					this.destroy();
 				}
 				//return; PREGUNTARLE si este return le mola, lo he visto en un ejemplo y así no comprueba nada mas del step porque no hace falta realmente
@@ -462,7 +461,7 @@ var game = function() {
 		
 				if(collision.obj.isA("Mario") && !this.yaColisionada) {
 					//console.log("hola mario");
-					//collision.obj.del('2d, platformerControls');
+					collision.obj.del('2d, platformerControls');
 					this.yaColisionada = true;
 					Q.stageScene("winGame",2, { label: "You Won!", sound: "music_level_complete.ogg" });
 					//console.log("entra varias veces con la colision... asegurarse de que corte solo con una");
@@ -961,10 +960,6 @@ Q.UI.Text.extend("Score",{
 
 	  Q.animations("coin", {
 		  normal: { frames: [0,1,2], rate: 5/15}
-	  });
-
-	  Q.animations("vida", {
-		  normal: { frames: [0], rate: 5/15}
 	  });
 
 
