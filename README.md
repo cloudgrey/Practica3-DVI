@@ -68,9 +68,8 @@ En esta practica, a parte de las mecanicas basicas, hemos realizado una serie de
 
 ## Nuestro juego
 
-Basándonos en el juego original y siguiendo el enunciado, éste es [nuestro resultado final](https://calope03.github.io/Practica2DVI/).
+Para probar este juego es necesario descargarlo y ejecutarlo con un servidor, ya sea python o XAMPP.
 
-¡A disfrutarlo!
 
 ## Colaboradores
 
