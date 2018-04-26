@@ -70,6 +70,12 @@ En esta practica, a parte de las mecanicas basicas, hemos realizado una serie de
 
 Para probar este juego es necesario descargarlo y ejecutarlo con un servidor, ya sea python o XAMPP.
 
+### Mecanicas
+
+Para controlar al jugador solo seran necesarios los controles de arriba, abajo, alante y atras.
+
+Nota: para saltar mas alto, basta con dejar pulsado el boton arriba, y se realizara un salto mas alto de lo normal, esto es necesario para pasarse algunos niveles, pero cuidado, no de todo se puede salir.
+
 
 ## Colaboradores
 
