@@ -854,6 +854,7 @@ Q.UI.Text.extend("Score",{
 		var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, label: stage.options.label }));
 
 		button.on("click",function() {
+			level = 1;
 		  Q.clearStages();
 		  Q.stageScene('startGame');
 		});
