@@ -1,6 +1,6 @@
 # Práctica 3 DVI
 
-En este repositorio se encuentra la [práctica 3]() de la asignatura Desarrollo de Videojuegos mediante Tecnologías Web.
+En este repositorio se encuentra la [práctica 3](https://github.com/cloudgrey/Practica3-DVI/tree/master) de la asignatura Desarrollo de Videojuegos mediante Tecnologías Web.
 
 Esta práctica consiste en desarrollar de una versión del videojuego de Super Mario. El objetivo de éste es alcanzar el final del mapa para rescatar a la princesa en cada mundo.
 
@@ -10,13 +10,13 @@ También se puede ver un [gameplay](https://www.youtube.com/watch?v=ia8bhFoqkVE)
 
 ## Archivos y directorios
 
-### [index.html]()
+### [index.html](https://github.com/cloudgrey/Practica3-DVI/blob/master/index.html)
 
 Aquí incluimos los archivos que contienen la lógica y datos del juego. 
-`window.onload = game;` llama a la función game que se encuentra en el archivo [practica3.js]() y es la encargada de ejecutar como tal el juego.
+`window.onload = game;` llama a la función game que se encuentra en el archivo [practica3.js](https://github.com/cloudgrey/Practica3-DVI/blob/master/practica3.js) y es la encargada de ejecutar como tal el juego.
 
 
-### [practica3.js]()
+### [practica3.js](https://github.com/cloudgrey/Practica3-DVI/blob/master/practica3.js)
 
 En este archivo se definen todos los elementos encargados de hacer funcionar el juego.
 
@@ -30,24 +30,24 @@ En este archivo se definen todos los elementos encargados de hacer funcionar el 
 - Panel de información del usuario (HUD).
 - Pantallas de inicio y fin del juego.
 
-### [audio]()
+### [audio](https://github.com/cloudgrey/Practica3-DVI/tree/master/audio)
 
 En esta carpeta el motor Quintus buscará todos los audios que se reproducen en el juego.
 
 El motor buscará los audios por orden de preferencia, en nuestro caso primero .ogg y luego .mp3 .
 Los audios deben estar en formato .ogg para que el motor los encuentre y el navegador los reproduzca.
 
-### [data]()
+### [data](https://github.com/cloudgrey/Practica3-DVI/tree/master/data)
 
 Contiene los ficheros .json que definen la posición, tamaño y frames del sprite en cada imagen.
 
 También contiene los ficheros que se encargan de definir los diferentes niveles. Es en estos archivos donde se definen las posiciones de los enemigos, el suelo y todo lo que visualizamos en el mapa, excepto Mario.
 
-### [images]()
+### [images](https://github.com/cloudgrey/Practica3-DVI/tree/master/images)
 
 En esta carpeta se encuentran las imágenes que se utilizan para los elementos de construcción de niveles, pintar los sprites, el fondo del juego y la pantalla inicial.
 
-### [lib]()
+### [lib](https://github.com/cloudgrey/Practica3-DVI/tree/master/lib)
 
 En esta carpeta se encuentran todos los archivos que componen el motor Quintus, que es el que se ha utilizado para desarrollar el juego.
 
