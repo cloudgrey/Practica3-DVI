@@ -1,0 +1,6 @@
+{
+	"koopaIzq":{"sx":0,"sy":0,"tileW":23,"tileH":32,"frames":4},
+	"koopaDer":{"sx":92,"sy":0,"tileW":23,"tileH":32,"frames":4},
+	"shellIzq":{"sx":184,"sy":17,"tileW":16,"tileH":15,"frames":1},
+	"shellDer":{"sx":200,"sy":17,"tileW":16,"tileH":15,"frames":1}
+}
