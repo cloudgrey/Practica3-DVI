@@ -1,9 +1,17 @@
+/**
+ * DVI Practica 3 - GII - UCM Curso 2017/2018
+ * Alumnos:
+ * Cesar Godino Rodriguez
+ * Carmen Lopez Gonzalo 
+ */
+
 var level=1;
 var MAX_LEVEL = 4;
 var PUNTUACION_GOOMBA = 100;
 var PUNTUACION_KOOPA = 200;
 var PUNTUACION_BLOOPA = 400;
 var game = function() {
+
 	//Función encargada de configurar una instancia del motor, cargar los recursos y lanzar el juego.
 
 	//-----------------------Se inicializa el motor------------------------------------------------
@@ -17,9 +25,7 @@ var game = function() {
 	   La funcionalidad en Quintus se organiza en módulos que cargamos opcionalmente
 	   al construir la instancia del motor junto al include(...)
 	*/
-	//{audioSupported: [ 'wav','mp3','ogg' ]}
-	//{ audioSupported: ['mp3','ogg'] }
-	var Q = window.Q = Quintus({audioSupported: [ 'mp3','ogg','wav' ]})
+	var Q = window.Q = Quintus({audioSupported: [ 'ogg','mp3' ]})
 						.include("Sprites, Scenes, Input, Touch, UI, Anim, TMX, 2D, Audio") 
 						.setup({ maximize: true }) 
 						.controls().touch().enableSound();
@@ -33,9 +39,6 @@ var game = function() {
 
 	Q.Sprite.extend("Mario",{
 
-		// the init constructor is called on creation
-		//Se puede redefinir un método definido en una superclase, 
-		//y es posible invocar la versión redefinida con this._super(..).
 		init: function(p) {
 
 			console.log("Estamos creando una instancia de Mario");
@@ -56,9 +59,7 @@ var game = function() {
 
 			this.add('2d, platformerControls, animation');
 
-			/*
-			Mario solo podrá saltar cuando este en el suelo, para así evitar que pueda saltar en el aire.
-			*/
+			//Mario solo podrá saltar cuando este en el suelo, para así evitar que pueda saltar en el aire.
 			this.on("bump.bottom",function(collision) {
 
 				if(collision.obj.isA("TileLayer") || collision.obj.isA("LifeBlock")|| collision.obj.isA("BigBlock")|| collision.obj.isA("CoinBlock")) { 
@@ -70,9 +71,6 @@ var game = function() {
 		},//init 
 
 		step: function(dt) {
-			//console.log(Q.input);
-			//console.log(this.p.direction);
-			//console.log(this);
 
 			if(Q.inputs['right']){
 				this.play("run_right");
@@ -89,9 +87,9 @@ var game = function() {
 			}
 
 			if(Q.inputs['up']){
-				//Q.inputs['up'] = false;
-				//Q.audio.play("jump.mp3");
+				
 				if(this.p.puedeSaltar==true){
+					Q.audio.play("jump.ogg");
 					this.p.puedeSaltar=false;
 					this.p.vy = -400;
 					if(this.p.direction == "right") {
@@ -102,29 +100,31 @@ var game = function() {
 					}
 				}
 			}
+
 			//Si Mario cae demasiado se considera que ha muerto
 			if(this.p["y"] > 650){
-				//this.p["x"] = 20;
-				//this.p["y"] = 528;
 				console.log("Tas caío lol");
 				Q.stageScene("endGame",2, { label: "You Died", sound: "music_die.ogg" }); 
 				this.destroy();
 			}
+
 			//La camara empieza a seguir a Mario cuando va por la mitad de la pantalla.
 			if(this.p.x >= Q.width/2){
 				this.stage.add("viewport").follow(this,{ x: true, y: false });
 				this.stage.viewport.offsetX = 0;
 				this.stage.viewport.offsetY = 60;
 			}
+
 			//Si Mario es inmune por que se ha chocado con un enemigo, empieza un contador y se le pone un poco transparente para que el usuario sepa que es inmune un tiempo.
 			if (this.p.inmune) {
 			  this.p.temporizadorInmune++;
-	      this.p.opacity = 0.5;
-	      if (this.p.temporizadorInmune >50) {
-	        this.p.inmune = false;
-	        this.p.opacity = 1;
-	      }
+		      this.p.opacity = 0.5;
+		      if (this.p.temporizadorInmune >50) {
+		        this.p.inmune = false;
+		        this.p.opacity = 1;
+		      }
 		  }
+
 		}//step
 
 	});//extend Mario
@@ -137,24 +137,17 @@ var game = function() {
 	Q.component("defaultEnemy", {
 		added: function() {
 	    	// Para inicializar cuando se crea el componente
-			//this.entity.p.algunaPropiedadDelObjetoQueTieneEsteComponente = 30; 
 			
-			//this.entity.on('bump.left,bump.right,bump.bottom', this, 'colisionOtroLado');
-			//this.entity.on('bump.top', this, 'colisionArriba');
 		},
 
 		colisionArriba: function(objetoQueGolpea) {
 			if(objetoQueGolpea.isA("Mario")) {
-				//objetoGolpeado.destroy();
-				//this.entity.destroy();
-				
 				
 				if(!this.entity.p.killed){
+					Q.audio.play("kill_enemy.ogg");
 					this.entity.p.killed = true;
 					this.entity.p.horaInicioMuerte = new Date().getTime() / 1000;
-					//this.entity.p.sensor = true;
-
-					//this.entity.p.type = Q.SPRITE_NONE;
+					
     				this.entity.p.collisionMask = Q.SPRITE_NONE;
     				this.entity.p.gravity = 0;
 				} 
@@ -179,10 +172,11 @@ var game = function() {
 		Si es pequeño entonces pierde una vida, cuando las vidas llegan a 0 muere
 		*/
 		colisionOtroLado: function(objetoQueGolpea) {
-			//console.log(this.entity.p);
+			
 			if(!objetoQueGolpea.p.grande){
 				if(objetoQueGolpea.isA("Mario") && !objetoQueGolpea.p.inmune) {
 					console.log("una vida menos");
+					Q.audio.play("mario_hurt.ogg");
 					objetoQueGolpea.p.inmune=true;
 					objetoQueGolpea.p.temporizadorInmune = 0;
 					Q.state.dec("lives",1);
@@ -193,6 +187,7 @@ var game = function() {
 					}
 				}
 			}else{
+				Q.audio.play("mario_hurt.ogg");
 				objetoQueGolpea.p.scale =1;
 				objetoQueGolpea.p.grande=false;
 				objetoQueGolpea.p.inmune=true;
@@ -201,7 +196,7 @@ var game = function() {
 			}
 		}
 
-	});//defaultEnemy
+	});//componente defaultEnemy
 
 	Q.Sprite.extend("Goomba",{
 
@@ -228,7 +223,7 @@ var game = function() {
 
 				this.defaultEnemy.colisionOtroLado(collision.obj);
 
-			});//on bump left-right-bottom
+			});//on bump left-right
 
 			this.on("bump.top",function(collision) {
 
@@ -246,7 +241,6 @@ var game = function() {
 				var horaActual = new Date().getTime() / 1000;
 
 				if(horaActual >= this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer){
-					//console.log("entra?");
 					this.destroy();
 				}
 				
@@ -298,7 +292,6 @@ var game = function() {
 		
 		step: function (dt){
 
-			//console.log(this.p);
 			if(this.p.killed){
 				this.play("muere");
 				var horaActual = new Date().getTime() / 1000;
@@ -306,7 +299,6 @@ var game = function() {
 				if(horaActual >= this.p.horaInicioMuerte + this.p.segundosHastaDesaparecer){
 					this.destroy();
 				}
-				//return; PREGUNTARLE si este return le mola, lo he visto en un ejemplo y así no comprueba nada mas del step porque no hace falta realmente
 			}
 			else{
 				this.play("normal");
@@ -314,7 +306,6 @@ var game = function() {
 			if(this.p.y == this.p.coordenadaYoriginal-16){
 				this.p["gravity"] = 0.08;
 				this.p["vy"] = -80;
-				//console.log("Parriba");
 			}
 		}
 	});//extend Bloopa
@@ -364,25 +355,25 @@ var game = function() {
 					
 				}
 
-			});//on bump left-right-bottom
+			});//on bump left-right
 
 			this.on("bump.top",function(collision) {
 
 				if(collision.obj.isA("Mario")) {
-					//this.destroy();
-					//console.log("hola");
+	
 					this.p.vecesGolpeado++;
 					collision.obj.p.vy = -300;
 
 					if(this.p.vecesGolpeado == 1) {
+						Q.audio.play("kill_enemy.ogg");
 						this.p.killed = true;
 						this.p.esPeligroso = false;
 						this.p.vx = 0;
 						this.p.scale = 0.9;
 						var puntos = PUNTUACION_KOOPA + ".gif";
-				    var xAntigua = this.p.x;
-				    var yAntigua = this.p.y;
-				    var punto = this.stage.insert(new Q.Puntos({asset: puntos, x: xAntigua, y: yAntigua - 34 }));
+				    	var xAntigua = this.p.x;
+				    	var yAntigua = this.p.y;
+				    	var punto = this.stage.insert(new Q.Puntos({asset: puntos, x: xAntigua, y: yAntigua - 34 }));
 						Q.state.inc("puntuacion",PUNTUACION_KOOPA);
 					}
 					else if(this.p.vecesGolpeado == 2) {
@@ -390,12 +381,8 @@ var game = function() {
 						this.p.esPeligroso = true;
 						 
 						//saber si mario le salta yendo hacia la derecha o izquierda para saber si darle velocidad positiva o negativa, respectivamente, al caparazon
-						//console.log(collision.obj.p.direction);
 						if(collision.obj.p.direction == "right") this.p.vx = this.p.velocidadEnloquecido; //si mario le salta desde la izquierda (porque se mueve hacia el yendo a la derecha)
 						else this.p.vx = -this.p.velocidadEnloquecido;
-
-						//this.p.vx = 30;
-						//console.log(this.p);
 					}
 					else if(this.p.vecesGolpeado > 2) {
 						this.p.vecesGolpeado = 1;
@@ -404,18 +391,14 @@ var game = function() {
 						this.p.vx = 0;
 					}
 				  
-				    //Q.stageScene("endGame",1, { label: "You Won!" });
+				    
 				}
-				//console.log(collision.isA("Mario"));
-
-				//this.defaultEnemy.colisionArriba(collision.obj);
-				//this.p.killed = true;
 
 			});//on bump top 
 
 		},//init 
 		step: function (dt){
-				//console.log(this.p.direction);
+				
 			if(this.p.killed){
 				if(!this.p.thrust){
 					if(this.p.vx > 0) this.play("shellIzq");
@@ -430,7 +413,7 @@ var game = function() {
 						}
 					}
 				}
-				//console.log(this.p.esPeligroso);
+				
 			}
 			else{
 				if(this.p.vx > 0) this.play("normalDer");
@@ -460,11 +443,11 @@ var game = function() {
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
 		
 				if(collision.obj.isA("Mario") && !this.yaColisionada) {
-					//console.log("hola mario");
+					
 					collision.obj.del('2d, platformerControls');
 					this.yaColisionada = true;
 					Q.stageScene("winGame",2, { label: "You Won!", sound: "music_level_complete.ogg" });
-					//console.log("entra varias veces con la colision... asegurarse de que corte solo con una");
+					
 				}
 			});//on
 
@@ -532,7 +515,8 @@ var game = function() {
 			this.add('2d, aiBounce, animation');
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
 				if(collision.obj.isA("Mario") && !this.yaColisionada) {
-					Q.state.inc("lives",1); // add 1 to monedasRecogidas
+					Q.audio.play("1up.ogg");
+					Q.state.inc("lives",1); // add 1 to lives
 					this.destroy();
 				}
 			});//on
@@ -564,6 +548,7 @@ var game = function() {
 			this.add('2d, aiBounce, animation');
 			this.on("bump.top,bump.left,bump.right,bump.bottom",function(collision) {
 				if(collision.obj.isA("Mario") && !this.yaColisionada) {
+					Q.audio.play("bigness.ogg");
 					collision.obj.p.scale = 1.5;
 					collision.obj.p.grande = true;
 					this.destroy();
@@ -614,7 +599,7 @@ var game = function() {
   Q.Sprite.extend("CoinBlock",{
 
     init: function(p) {
-    	console.log("Estamos creando una instancia de Coiagssgsdgn");
+    	console.log("Estamos creando una instancia de CoinBlock");
 
      
       this._super(p, {
@@ -633,6 +618,7 @@ var game = function() {
           if(!this.p.moviendo && !this.p.golpeado){
             this.p.moviendo = true;
             Q.state.inc("monedasRecogidas",1);
+            Q.audio.play("coin.ogg");
             
             var xAntigua = this.p.x;
             var yAntigua = this.p.y;
@@ -659,7 +645,7 @@ var game = function() {
   Q.Sprite.extend("BigBlock",{
 
     init: function(p) {
-    	console.log("Estamos creando una instancia de lifeblock");
+    	console.log("Estamos creando una instancia de BigBlock");
 
      
       this._super(p, {
@@ -676,6 +662,7 @@ var game = function() {
         if(collision.obj.isA("Mario")) {
 
           if(!this.p.moviendo && !this.p.golpeado){
+          	Q.audio.play("item_rise_big.ogg");
             this.p.moviendo = true;
             Q.state.inc("monedasRecogidas",1);
             
@@ -703,7 +690,7 @@ var game = function() {
   Q.Sprite.extend("LifeBlock",{
 
     init: function(p) {
-    	console.log("Estamos creando una instancia de lifeblock");
+    	console.log("Estamos creando una instancia de LifeBlock");
 
      
       this._super(p, {
@@ -722,6 +709,7 @@ var game = function() {
           if(!this.p.moviendo && !this.p.golpeado){
             this.p.moviendo = true;
             Q.state.inc("monedasRecogidas",1);
+            Q.audio.play("item_rise_big.ogg");
             
             var xAntigua = this.p.x;
             var yAntigua = this.p.y;
@@ -791,6 +779,7 @@ Q.UI.Text.extend("Score",{
 
 	Q.scene("level",function(stage) {
 		var nivel = "nivel"+level+".tmx";
+		Q.audio.stop("music_level_complete.ogg");
 		Q.audio.play( "music_main.ogg", { loop: true });
 		Q.stageTMX(nivel,stage);
 
@@ -861,7 +850,7 @@ Q.UI.Text.extend("Score",{
 
 		container.fit(20);
 
-	});//scene endgame
+	});//scene endGame
 
 	Q.scene('winGame',function(stage) {
 
@@ -894,7 +883,7 @@ Q.UI.Text.extend("Score",{
 		
 		container.fit(20);
 
-	});
+	});//scene winGame
 
 	Q.scene('startGame',function(stage) {
 		
@@ -906,7 +895,7 @@ Q.UI.Text.extend("Score",{
 															fill: "rgba(0,0,0,0.5)"
 														}));
 
-		var button = container.insert(new Q.UI.Button({ x:Q.width/2 , y: Q.height/2, h: Q.height, w: Q.width, asset: "mainTitle.png" })); 
+		var button = container.insert(new Q.UI.Button({ x: (Q.width/2)-400, y: (Q.height/2)-300, h: Q.height, w: Q.width, asset: "mainTitle.png" })); 
 		button.on("click",function() {
 		  Q.stageScene('level');
 		  Q.stageScene("hud",1);
@@ -918,12 +907,12 @@ Q.UI.Text.extend("Score",{
 		});
 		
 
-	});//scene startgame
+	});//scene startGame
 
 
 	
 
-	Q.loadTMX("nivel1.tmx, nivel2.tmx, nivel3.tmx,nivel4.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, block1.png, block.json, koopa.png, koopa.json, princess.png, mainTitle.png,100.gif,200.gif,400.gif, music_main.ogg, music_level_complete.ogg, music_die.ogg, coin.ogg, coin.png, coin.json, life.png, jump.mp3, unlocked.mp3, coin.gif, vida.png, score.png, big.png", function() {
+	Q.loadTMX("nivel1.tmx, nivel2.tmx, nivel3.tmx,nivel4.tmx, mario_small.png, mario_small.json, goomba.png, goomba.json, bloopa.png, bloopa.json, block1.png, block.json, koopa.png, koopa.json, princess.png, mainTitle.png,100.gif,200.gif,400.gif, music_main.ogg, music_level_complete.ogg, music_die.ogg, coin.ogg, coin.png, coin.json, life.png, jump.ogg, 1up.ogg, kill_enemy.ogg, bigness.ogg, item_rise_big.ogg, mario_hurt.ogg, coin.gif, vida.png, score.png, big.png", function() {
 	  
 	  Q.compileSheets("mario_small.png", "mario_small.json");
 	  Q.compileSheets("goomba.png", "goomba.json");
@@ -943,7 +932,7 @@ Q.UI.Text.extend("Score",{
 
 	  Q.animations("bloopa", {
 		  normal: { frames: [0,1], rate: 8/15},
-		  muere: { frames: [2], rate: 8/15}//, trigger: "died"}
+		  muere: { frames: [2], rate: 8/15}
 	  });
 
 	  Q.animations("goomba", {

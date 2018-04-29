@@ -2,9 +2,9 @@
 
 En este repositorio se encuentra la [práctica 3]() de la asignatura Desarrollo de Videojuegos mediante Tecnologías Web.
 
-Esta práctica consiste en el desarrollo de una version del videojuego de Mario. El objetivo de éste es alcanzar el final del mapa para rescatar a la princesa, en cada mundo.
+Esta práctica consiste en desarrollar de una versión del videojuego de Super Mario. El objetivo de éste es alcanzar el final del mapa para rescatar a la princesa en cada mundo.
 
-Se puede probar como referencia en el desarrollo una [demo del juego](http://supermarioemulator.com/mario.php). 
+Se puede probar como referencia durante el desarrollo una [demo del juego](http://supermarioemulator.com/mario.php). 
 
 También se puede ver un [gameplay](https://www.youtube.com/watch?v=ia8bhFoqkVE) del juego original.
 
@@ -13,7 +13,7 @@ También se puede ver un [gameplay](https://www.youtube.com/watch?v=ia8bhFoqkVE)
 ### [index.html]()
 
 Aquí incluimos los archivos que contienen la lógica y datos del juego. 
-`window.onload = game;` llama a la funcion game que se encuentra en el archivo [practica3.js]() y es la encargada de hacer funcionar el juego.
+`window.onload = game;` llama a la función game que se encuentra en el archivo [practica3.js]() y es la encargada de ejecutar como tal el juego.
 
 
 ### [practica3.js]()
@@ -26,55 +26,54 @@ En este archivo se definen todos los elementos encargados de hacer funcionar el 
   - Enemigos
   - Bloques
   - Monedas
-  - La princesa
-- Panel de informacion del usuario (HUD).
+  - La princesa Peach
+- Panel de información del usuario (HUD).
 - Pantallas de inicio y fin del juego.
 
 ### [audio]()
 
-En esta carpeta el motor quintus buscará todos los audios que se reproducen en el juego.
+En esta carpeta el motor Quintus buscará todos los audios que se reproducen en el juego.
 
-EL MOTOR BUSCARA LOS AUDIOS POR ORDEN DE PREFERENCIA, EN ESTE CASO .MP3-.OGG-.WAV
-
-LOS AUDIOS DEBEN ESTAR EN FORMATO .OGG PARA QUE EL MOTOR LOS ENCUENTRE Y EL NAVEGADOR LOS REPRODUZCA.
+El motor buscará los audios por orden de preferencia, en nuestro caso primero .ogg y luego .mp3 .
+Los audios deben estar en formato .ogg para que el motor los encuentre y el navegador los reproduzca.
 
 ### [data]()
 
-Contiene los ficheros .json que definen la posicion, tamaño y frames del sprite en cada imagen.
+Contiene los ficheros .json que definen la posición, tamaño y frames del sprite en cada imagen.
 
-Tambien contiene los ficheros que se encargan de definir los diferentes niveles. Es en estos archivos donde se definen las posiciones de los enemigos, el suelo y todo lo que visualizamos en el mapa, excepto Mario.
+También contiene los ficheros que se encargan de definir los diferentes niveles. Es en estos archivos donde se definen las posiciones de los enemigos, el suelo y todo lo que visualizamos en el mapa, excepto Mario.
 
 ### [images]()
 
-En esta carpeta se encuentran las imagenes que se utilizan para los elementos de construccion de nivel, pintar los sprites, el fondo del juego y la pantalla inicial.
+En esta carpeta se encuentran las imágenes que se utilizan para los elementos de construcción de niveles, pintar los sprites, el fondo del juego y la pantalla inicial.
 
 ### [lib]()
 
-En esta carpeta se encuentran todos los archivos que componen el motor quintus, que es el que se ha utilizado para desarrollar el juego.
+En esta carpeta se encuentran todos los archivos que componen el motor Quintus, que es el que se ha utilizado para desarrollar el juego.
 
 ## Ampliaciones realizadas
 
-En esta practica, a parte de las mecanicas basicas, hemos realizado una serie de ampliaciones, basandonos siempre en el comportamiento original tanto de Mario como de sus enemigos.
+En esta práctica, a parte de las mecánicas básicas, hemos realizado una serie de ampliaciones, basándonos siempre en el comportamiento original tanto de Mario como de sus enemigos.
 
 - Bloques de monedas
 - Bloques de setas
-  - Seta verde: te da una vida mas.
-  - Seta roja: te hace grande, provocando asi que si te chocas con un enemigo vuelvvas a ser pequeño.
-- Koopa, que ademas al eliminarlo se convierte en la concha.
-- Toda la informacion mostrada en el HUD y las variables necesarias para su funcionamiento.
+  - Seta verde: te da una vida más.
+  - Seta roja: te hace grande, provocando así que, si te chocas con un enemigo, vuelvas a ser pequeño (sin restarte una vida).
+- Koopa, que además al eliminarlo se convierte en un caparazón.
+- Toda la información mostrada en el HUD y las variables necesarias para su funcionamiento.
 - Diferentes niveles.
 - Se muestran los puntos al matar a un enemigo.
 
 
 ## Nuestro juego
 
-Para probar este juego es necesario descargarlo y ejecutarlo con un servidor, ya sea python o XAMPP.
+Para probar este juego es necesario descargarlo y ejecutarlo con un servidor, ya sea montado con Python o XAMPP.
 
-### Mecanicas
+### Mecánicas
 
-Para controlar al jugador solo seran necesarios los controles de arriba, abajo, alante y atras.
+Para controlar al jugador sólo serán necesarios los controles de arriba, abajo, izquierda y derecha.
 
-Nota: para saltar mas alto, basta con dejar pulsado el boton arriba, y se realizara un salto mas alto de lo normal, esto es necesario para pasarse algunos niveles, pero cuidado, no de todo se puede salir.
+Nota: para saltar más alto, basta con dejar pulsado el boton arriba (tras el primer salto) y Mario dará un salto más alto de lo habitual. Esto es necesario para avanzar en algunos niveles, pero... cuidado, hay algunas zonas trampa de las que no se puede salir ;) .
 
 
 ## Colaboradores
